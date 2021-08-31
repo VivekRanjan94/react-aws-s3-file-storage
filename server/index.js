@@ -29,8 +29,15 @@ app.get('/', (req, res) => {
 })
 
 app.post('/upload', async (req, res) => {
+  // Restricting file formats
+  const formats = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
+  if (!formats.includes(req.files.file.mimeType)) {
+    return res
+      .status(415)
+      .send({ Success: false, message: 'File type not supported' })
+  }
+
   // Binary data base64
-  console.log(req.files.file)
   const fileContent = Buffer.from(req.files.file.data, 'binary')
 
   // Setting up S3 upload parameters
