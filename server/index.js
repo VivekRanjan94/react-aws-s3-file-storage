@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 
 app.post('/upload', async (req, res) => {
   // Binary data base64
-  console.log(req.files)
+  console.log(req.files.file)
   const fileContent = Buffer.from(req.files.file.data, 'binary')
 
   // Setting up S3 upload parameters
@@ -54,29 +54,6 @@ app.post('/upload', async (req, res) => {
 })
 
 app.get('/files', (req, res) => {
-  // async function retrieveFile(filename, res) {
-  //   const getParams = {
-  //     Bucket: process.env.AWS_S3_BUCKET_NAME,
-  //     Key: filename,
-  //   }
-
-  //   // s3.getObject(getParams, function (err, data) {
-  //   //   if (err) {
-  //   //     return res.status(400).send({ success: false, err: err })
-  //   //   } else {
-  //   //     console.log(data)
-  //   //     return res.send(data)
-  //   //     // data.Body.pipe(res)
-  //   //   }
-  //   // })
-
-  //   const object = await s3.getObject(getParams)
-
-  //   object.Body.pipe(res)
-  // }
-
-  // retrieveFile(req.query.filename, res)
-
   s3.getSignedUrl(
     'getObject',
     {
@@ -101,7 +78,7 @@ app.get('/all-files', (req, res) => {
       if (err) {
         console.log('Error', err)
       } else {
-        console.log('Success', data.Contents)
+        // console.log('Success', data.Contents)
         res.json(data.Contents)
       }
     }

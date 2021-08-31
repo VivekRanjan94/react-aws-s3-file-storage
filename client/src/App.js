@@ -5,6 +5,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [fileNames, setFileNames] = useState([])
 
+  const formats = ['image/*', '.pdf']
+
   const getFileNames = async () => {
     const response = await Axios.get(
       `${process.env.REACT_APP_SERVER_URL}/all-files`
@@ -38,10 +40,14 @@ function App() {
 
   return (
     <div className='App' style={{ display: 'flex', flexDirection: 'column' }}>
-      <form method='POST' action='/upload' encType='multipart/form-data'>
+      <form
+        method='POST'
+        action={`${process.env.REACT_APP_SERVER_URL}/upload`}
+        encType='multipart/form-data'
+      >
         <div className='field'>
           <label htmlFor='file'>File Upload</label>
-          <input type='file' name='file' id='file' />
+          <input type='file' name='file' id='file' accept={formats.join(',')} />
         </div>
         <input type='submit' className='btn' value='Save' />
       </form>
