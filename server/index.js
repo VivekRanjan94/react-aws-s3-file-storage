@@ -37,6 +37,12 @@ app.post('/upload', async (req, res) => {
       .send({ Success: false, message: 'File type not supported' })
   }
 
+  // Restricting file size
+  const size = 10240000
+  if (req.files.file.size > size) {
+    return res.status(406).send({ Success: false, message: 'File too large' })
+  }
+
   // Binary data base64
   const fileContent = Buffer.from(req.files.file.data, 'binary')
 
