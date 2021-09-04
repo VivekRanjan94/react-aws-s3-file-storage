@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios'
+import { Document, Page } from 'react-pdf'
 
 function App() {
   const [loading, setLoading] = useState(true)
   const [fileNames, setFileNames] = useState([])
+  const [url, setUrl] = useState('')
 
   const formats = ['image/*', '.pdf']
 
@@ -15,7 +17,7 @@ function App() {
     setLoading(false)
   }
 
-  const downloadFile = async (name) => {
+  const openFile = async (name) => {
     const url = await getFileUrl(name)
 
     var a = document.createElement('a')
@@ -23,7 +25,8 @@ function App() {
     a.style = 'display: none'
 
     a.href = url
-    a.download = name
+    a.target = '_blank'
+    // a.download = name
     a.click()
   }
 
@@ -31,11 +34,12 @@ function App() {
     const response = await Axios.get(
       `${process.env.REACT_APP_SERVER_URL}/files?filename=${name}`
     )
-    return response.data
+    const data = response.data
+    setUrl(data)
   }
 
   useEffect(() => {
-    getFileNames()
+    getFileUrl('MonthlyInsights.pdf')
   }, [])
 
   return (
@@ -54,18 +58,25 @@ function App() {
       <button onClick={() => getFileNames()}>Get All Files</button>
       {!loading &&
         fileNames.map((file, idx) => {
+          console.log(file)
+          const name = file.Key.split('.')[0]
+          const ext = file.Key.split('.')[1] || 'folder'
           return (
             <span
               key={idx}
-              download={`${file.Key}`}
-              onClick={() => {
-                downloadFile(file.Key)
-              }}
+              onClick={
+                ext !== 'folder'
+                  ? () => {
+                      openFile(file.Key)
+                    }
+                  : null
+              }
             >
-              {`${file.Key.split('.')[0]} -> ${file.Key.split('.')[1]}`}
+              {`${name} -> ${ext}`}
             </span>
           )
         })}
+      <a href={url}>monthly insights</a>
     </div>
   )
 }

@@ -4,7 +4,7 @@ const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const app = express()
 
-const PORT = 5000
+const PORT = 5001
 
 app.use(fileUpload())
 app.use(
@@ -31,7 +31,9 @@ app.get('/', (req, res) => {
 app.post('/upload', async (req, res) => {
   // Restricting file formats
   const formats = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
-  if (!formats.includes(req.files.file.mimeType)) {
+  const supportedFile = formats.includes(req.files.file.mimetype)
+
+  if (!supportedFile) {
     return res
       .status(415)
       .send({ Success: false, message: 'File type not supported' })
@@ -51,6 +53,7 @@ app.post('/upload', async (req, res) => {
     Bucket: process.env.AWS_S3_BUCKET_NAME,
     Key: req.files.file.name, // File name you want to save as in S3
     Body: fileContent,
+    ContentType: 'application/pdf',
   }
 
   // Uploading files to the bucket
